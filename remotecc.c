@@ -14,6 +14,12 @@
 #include "libssh2_config.h"
 #include "libssh2_sftp.h"
 
+#include "transport.h"
+#include "crypto.h"
+#include "openssl.h"
+#include "comp.h"
+#include "mac.h"
+
 #include "remotecc.h"
 
 
