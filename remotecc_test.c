@@ -63,8 +63,7 @@ int main(int argc, char **argv)
 			usage();
 			return 0;
 	}
-printf("command: %s   argv: %s\n", command, argvs);
-	return 0;
+
 	remotecc_handler_t handler, *p;
 	p = remotecc_module.init(username, passwd, command,
 			ipaddr, argvs, &handler);

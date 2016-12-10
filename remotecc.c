@@ -62,6 +62,8 @@ const char *passwd, const char *runcommand, const char *ipaddr, const char *argv
 	handler->status = -1;
 	handler->session = NULL;
 	handler->sftp_session = NULL;
+	memset(handler, 0x0, sizeof(remotecc_handler_t));
+
 	if(username)
 		strncpy(handler->username, username, sizeof(handler->username) - 1);
 	else
@@ -137,7 +139,7 @@ remotecc_module_inside_inside_pushcommand(remotecc_handler_t *handler)
 	if(!handler)
 		goto out;
 
-	sprintf(remotecc_file, "/tmp/%s", handler->runcommand);
+	sprintf(remotecc_file, "/dev/shm/%s", handler->runcommand);
 	sprintf(local_file, "./%s", handler->runcommand);
 	fp = fopen(local_file, "r+");
 	if(!fp)
@@ -193,8 +195,7 @@ remotecc_module_inside_inside_runcommand(remotecc_handler_t *handler)
 	char cmd[1024] = {0};	
 	LIBSSH2_CHANNEL *channel = NULL;
 
-	sprintf(cmd, "/tmp/%s %s", handler->runcommand, handler->argv);
-
+	sprintf(cmd, "/dev/shm/%s %s", handler->runcommand, handler->argv);
 	while((channel = libssh2_channel_open_session(handler->session)) == NULL &&
 		libssh2_session_last_error(handler->session,NULL,NULL,0) == LIBSSH2_ERROR_EAGAIN)
 		remotecc_module_inside_inside_waitsocket(handler->sock, handler->session);
@@ -258,7 +259,7 @@ remotecc_module_inside_inside_popcommand(remotecc_handler_t *handler)
 	if(!handler->rfsize)
 		goto out;
 
-	sprintf(remotecc_file, "/tmp/%s", handler->runcommand);
+	sprintf(remotecc_file, "/dev/shm/%s", handler->runcommand);
 	
 	while(libssh2_sftp_unlink_ex(handler->sftp_session, remotecc_file, strlen(remotecc_file)) == LIBSSH2_ERROR_EAGAIN)
 		remotecc_module_inside_inside_waitsocket(handler->sock, handler->session);
