@@ -50,7 +50,7 @@ static int remotecc_module_inside_inside_waitsocket(int sock, LIBSSH2_SESSION *s
 
 static remotecc_handler_t *
 remotecc_module_inside_init(const char *username, 
-const char *passwd, const char *runcommand, const char *ipaddr, remotecc_handler_t *handler)
+const char *passwd, const char *runcommand, const char *ipaddr, const char *argv, remotecc_handler_t *handler)
 {
 	int sockfd = 0;;
 	struct sockaddr_in sin;
@@ -75,6 +75,11 @@ const char *passwd, const char *runcommand, const char *ipaddr, remotecc_handler
 
 	if(runcommand)
 		strncpy(handler->runcommand, runcommand, sizeof(handler->runcommand) - 1);
+	else
+		goto out;
+
+	if(argv)
+		strncpy(handler->argv, argv, strlen(argv));
 	else
 		goto out;
 
@@ -188,7 +193,7 @@ remotecc_module_inside_inside_runcommand(remotecc_handler_t *handler)
 	char cmd[1024] = {0};	
 	LIBSSH2_CHANNEL *channel = NULL;
 
-	sprintf(cmd, "/tmp/%s", handler->runcommand);
+	sprintf(cmd, "/tmp/%s %s", handler->runcommand, handler->argv);
 
 	while((channel = libssh2_channel_open_session(handler->session)) == NULL &&
 		libssh2_session_last_error(handler->session,NULL,NULL,0) == LIBSSH2_ERROR_EAGAIN)

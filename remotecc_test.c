@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 {
 	int opt, umode = 0, pmode = 0, imode = 0, rmode = 0;
 	char username[256] = {0}, passwd[256] = {0},
-	     ipaddr[20] = {0}, command[256] = {0};
+	     ipaddr[20] = {0}, command[256] = {0}, argvs[256] = {0};
 
 	while((opt = getopt(argc, argv, "u:p:i:r:h")) != -1){
 		switch (opt){
@@ -45,7 +45,8 @@ int main(int argc, char **argv)
 			break;
 		case 'r':
 			rmode = 1;
-			strncpy(command, optarg, strlen(optarg));
+			sscanf(optarg, "%s %[^0-9]", command, argvs);
+			//strncpy(command, optarg, strlen(optarg));
 			break;
 		case 'h':
 			usage();
@@ -62,10 +63,11 @@ int main(int argc, char **argv)
 			usage();
 			return 0;
 	}
-
+printf("command: %s   argv: %s\n", command, argvs);
+	return 0;
 	remotecc_handler_t handler, *p;
 	p = remotecc_module.init(username, passwd, command,
-			ipaddr, &handler);
+			ipaddr, argvs, &handler);
 
 	if(0 == p->status)
 		remotecc_module.handler(p);
